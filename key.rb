@@ -90,7 +90,7 @@ loop do
   SDL::Key.scan
   break if  SDL::Key.press?(SDL::Key::ESCAPE)
   press_key=""
-  pushd_key =false
+  pushd_key = false
   KEY2CHAR.each_key do |key|
     next unless  SDL::Key.press?(key)
     if pushd_key 
