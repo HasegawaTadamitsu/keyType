@@ -5,6 +5,22 @@ require 'pry'
 
 TRUE_TYPE_FONT="/usr/share/fonts/truetype/takao-mincho/TakaoExMincho.ttf"
 
+SAMPLE=["ぞうさん","しまじろう","お父さん","お母さん",
+     "げんこつやま",
+     "一","二","三","四","五","六","七","八","九","十",
+     "０","１","２","３","４","５",
+     "６","７","８","９","１０"]
+
+NUMBER=%w/ 0 1 2 3 4 5 6 7 8 9 10/
+
+HIRAGANA=("あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほ"+
+         "まみむめもやゆよらりるれろん").split(//) 
+
+#MSG=SAMPLE
+#MSG=NUMBER
+MSG=HIRAGANA
+
+
 SDL.init( SDL::INIT_VIDEO )
 
 WIDTH=1024
@@ -18,17 +34,14 @@ SDL::TTF.init
 SDL::Mouse.hide
 @buffer = Array.new
 
-SAMPLE=["ぞうさん","しまじろう","お父さん","お母さん",
-     "げんこつやま",
-     "一","二","三","四","五","六","七","八","九","十",
-     "０","１","２","３","４","５",
-     "６","７","８","９","１０"]
 
-NUMBER=[ "0","1","2","3","4","5",
-         "6","7","8","9","10"]
-MSG=NUMBER
-#MSG=SAMPLE
 
+class Image
+  def initialize filename
+  end
+  def draw screen
+  end
+end
 class String 
   def draw screen
   w, h = @@font_big.textSize(self)
@@ -53,7 +66,6 @@ end
 
 class Array
   def mypush val
-#  binding.pry
     if 10 < self.size
       self.shift
     end
@@ -68,30 +80,40 @@ end
 
 def mouse_button
   dm, dm, lbutton, mbutton,rbutton = SDL::Mouse.state
-  if lbutton == @last_lbutton and 
-     rbutton == @last_rbutton then
-     return @last_message 
-  end
-  @last_lbutton = lbutton
-  @last_rbutton = rbutton
-  if (lbutton == false  and  rbutton == false) or
-     (lbutton == true   and  rbutton == true ) 
+  if  lbutton == false and rbutton == false
+    @last_lbutton = lbutton
+    @last_rbutton = rbutton
     @last_message = ""
-    return @last_message
+    return @last_message 
   end
-  if  rbutton == true
+
+  if  lbutton == true and rbutton == true
+    @last_lbutton = lbutton
+    @last_rbutton = rbutton
+    return @last_message 
+  end
+
+  if rbutton == true and @last_rbutton == false
+    @last_lbutton = lbutton
+    @last_rbutton = rbutton
     @last_message = random_msg
     @buffer.mypush @last_message
     return @last_message
   end
-  if  lbutton == true
+
+
+  if lbutton == true and @last_lbutton == false
+    @last_lbutton = lbutton
+    @last_rbutton = rbutton
     msg =  @buffer.pop
-    if msg.nil?
-      msg=""
-    end
+    msg = "" if msg.nil?
     @last_message = msg
-     return @last_message
+    return @last_message
   end
+
+  @last_lbutton = lbutton
+  @last_rbutton = rbutton
+  return @last_message
 end
 
 
